@@ -2,27 +2,19 @@ from flask import Flask, request, render_template
 from pickle import load
 
 app = Flask(__name__)
-model = load(open("../models/decision_tree_classifier_default_42.sav", "rb"))
-class_dict = {
-    "0": "Iris setosa",
-    "1": "Iris versicolor",
-    "2": "Iris virginica"
-}
+model = load(open("/workspaces/flask-render-integration/models/decision_tree_classifier_default_42.sav", "rb"))
 
 @app.route("/", methods = ["GET", "POST"])
 def index():
+    prediction = None
+
     if request.method == "POST":
-        
         # Obtain values from form
-        val1 = float(request.form["val1"])
-        val2 = float(request.form["val2"])
-        val3 = float(request.form["val3"])
-        val4 = float(request.form["val4"])
+        val1 = int(request.form["val1"])
+        val2 = int(request.form["val2"])
+        val3 = int(request.form["val3"])
         
-        data = [[val1, val2, val3, val4]]
-        prediction = str(model.predict(data)[0])
-        pred_class = class_dict[prediction]
-    else:
-        pred_class = None
+        data = [[val1, val2, val3]]
+        prediction = int(model.predict(data)[0])
     
-    return render_template("index.html", prediction = pred_class)
+    return render_template("index.html", prediction = prediction)
